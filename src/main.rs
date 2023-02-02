@@ -1,52 +1,9 @@
-/*
- * use gtk::prelude::*;
-use gtk::{
-    Button, Entry, Grid, Stack, StackSidebar, Window,
-};
-
-fn main() {
-    if gtk::init().is_err() {
-        println!("Failed to initialize GTK.");
-        return;
-    }
-
-    let window = Window::new(gtk::WindowType::Toplevel);
-    window.set_title("GtkStackSidebar Example");
-    window.set_default_size(400, 300);
-
-    let grid = Grid::new();
-    let button = Button::with_label("Stack Page 1");
-    let entry = Entry::new();
-    entry.set_text("Stack Page 2");
-    grid.attach(&entry, 0, 0, 1, 1);
-
-    let stack = Stack::new();
-    stack.add_titled(&button, "page1", "Stack Page 1");
-    stack.add_titled(&grid, "page2", "Stack Page 2");
-
-    let sidebar = StackSidebar::new();
-    sidebar.set_stack(&stack);
-
-    grid.attach(&sidebar, 1, 0, 1, 2);
-    window.add(&grid);
-
-    window.show_all();
-
-    window.connect_delete_event(|_, _| {
-        gtk::main_quit();
-        Inhibit(false)
-    });
-
-    gtk::main();
-}
-
- */
 extern crate gtk;
 use gtk::prelude::*;
 use gio::prelude::*;
 use glib::prelude::*;
 
-use gtk::{Application,Window, ApplicationWindow,Entry,HeaderBar,Button,Grid,Stack,StackSidebar};
+use gtk::{Application,Window, ApplicationWindow,Entry,HeaderBar,Button,Grid,Stack,StackSidebar,Layout};
 
 fn main() {
 	
@@ -55,26 +12,52 @@ fn main() {
         .build();
         
 app.connect_activate(|app| {
-	         //Control
-	         let text = Entry::new();
-             let button = Button:: from_icon_name(Some("add"),gtk::IconSize::Menu);
-             
+	         //text1
+	         let text1 = Entry::builder()
+            .placeholder_text("input")
+            .can_default(true)
+            .can_focus(true)
+            .margin(20)
+            .margin_bottom(20)
+            .margin_top(20)
+            .margin_start(70)            
+            .margin_end(20)
+            .build();
+            
+	         let text2 = Entry::new();
+             //button
+             let button1 = Button::builder()
+            .label("Click1")
+            .margin(60)
+            .margin_bottom(60)
+            .margin_top(60)
+            .margin_start(60)
+            .margin_end(60)
+            .build();
+            
+             let button_cancle = Button:: from_icon_name(Some("cancle"),gtk::IconSize::Menu);
+             let button_edit = Button:: from_icon_name(Some("edit"),gtk::IconSize::Menu);
+             //Layout
+              
+			let layout = Layout::builder()
+		     .height_request(400)
+             .width_request(300)	
+             .build();
+            
              //Grid
-             let grid = Grid::builder()
-             .width_request(20)
-             .height_request(170)             
+             let grid = Grid::builder() 
+             .halign(gtk::Align::Start)         
              .build();
 			 
              //stack
              let stack = Stack::builder()
-             .width_request(400)
-             .height_request(170)
              .name("Test1")
              .build();
              
               //StackSidebar
-             let stacksidebar = StackSidebar::builder()  
-             . margin_bottom(170)           
+             let stacksidebar = StackSidebar::builder()   
+              .expand(true)
+              .halign(gtk::Align::Fill)
              .build();
              
              //Headerbar
@@ -84,24 +67,31 @@ app.connect_activate(|app| {
              .show_close_button(true)
              .build();
             
-             //Windows
+             //Windows Application
              
-              let window = ApplicationWindow::builder()
+             let window = ApplicationWindow::builder()
             .application(app)
-            .default_width(640)
-            .default_height(480)	
-            .build();	
-
-		
+            .default_width(800)
+            .default_height(600)	
+            .build();
+            
+            			
 			 let screen = gtk::prelude::GtkWindowExt::screen(&window).unwrap();
-			 grid.attach(&stacksidebar, 1, 70, 1, 1);
-			 grid.attach(&stack, 1, 0, 1, 2);
-
 			 
-			 stack.add_titled(&button, "page1", "Stack Page 1");
-			 stack.add_titled(&text, "page2", "Stack Page 2");
+			 
+			  //Grid  Attach
+			 grid.attach(&stacksidebar, 0, 0, 1, 1);
+			 grid.attach(&stack, 1, 0, 1, 2);
+			 
+			 stack.add_titled(&layout, "page1", "Stack Page 1");
+			 stack.add_titled(&text2, "page2", "Stack Page 2");
+			 stack.add_titled(&button_cancle, "page3", "Stack Page 3");
+			  
 			 stacksidebar.set_stack(&stack);
 			 window.set_titlebar(Some(&header));  
+			 
+			layout.add(&text1); 
+		    layout.add(&button1); 
 			grid.add(&stacksidebar); 
 			window.add(&grid);
             window.show_all();
